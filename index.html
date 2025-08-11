@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Paddle Stack Queue (Prototype + Rewards)</title>
+  <link rel="stylesheet" href="style.css">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#ffffff">
+</head>
+<body>
+  <header>
+    <div class="head-left">
+      <h1>🏓 Paddle Stack Queue</h1>
+      <p class="tag">Crowdsourced stacks in line at open play</p>
+    </div>
+    <div class="head-right">
+      <button id="openRewardsBtn" class="pill">
+        ⭐ <span id="pointsTotal">0</span>
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <section class="card">
+      <h2>Pick location</h2>
+      <div class="row">
+        <select id="venueSelect"></select>
+        <button id="addVenueBtn" class="secondary">+ New</button>
+      </div>
+      <div id="newVenueForm" class="hidden">
+        <input id="venueName" placeholder="Venue name">
+        <input id="venueAddress" placeholder="Address (optional)">
+        <input id="venueCourts" type="number" placeholder="# of courts" min="1">
+        <button id="saveVenueBtn">Save Venue</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <div id="rewardStrip" class="reward-strip hidden">
+        <span id="streakText">🔥 0-Day Streak</span>
+        <span>·</span>
+        <span id="accuracyText">🎯 — Accuracy</span>
+        <span>·</span>
+        <span id="lastGainText">+0 pts</span>
+      </div>
+      <h2>Report stacks</h2>
+      <div id="reportControls">
+        <div class="counter">
+          <button id="decBtn">–</button>
+          <input id="stackInput" type="number" min="0" value="0">
+          <button id="incBtn">+</button>
+        </div>
+        <div class="row">
+          <select id="stackType">
+            <option value="paddles">Stacks of paddles</option>
+            <option value="players">Groups waiting (players)</option>
+          </select>
+          <input id="noteInput" placeholder="Note (e.g., 'two courts down')">
+        </div>
+        <button id="submitReportBtn" class="primary">Submit</button>
+      </div>
+
+      <div id="cooldown" class="hidden">Thanks! You can submit again in <span id="cooldownTime"></span>s.</div>
+    </section>
+
+    <section class="card">
+      <h2>Live status</h2>
+      <div id="liveStatus">
+        <div class="stats">
+          <div><span class="label">Consensus stacks:</span> <span id="consensus">–</span></div>
+          <div><span class="label">Confidence:</span> <span id="confidence">–</span></div>
+          <div><span class="label">Last update:</span> <span id="lastUpdate">–</span></div>
+        </div>
+        <div class="estimates">
+          <h3>Rough wait estimate</h3>
+          <div class="row">
+            <label>Avg game min <input id="avgGameMin" type="number" min="5" value="12"></label>
+            <label>Players per court <input id="ppc" type="number" min="2" value="4"></label>
+          </div>
+          <p id="waitText">–</p>
+        </div>
+        <div id="recentReports"></div>
+      </div>
+    </section>
+
+    <section class="card soft">
+      <h2>How this works</h2>
+      <ol>
+        <li>Pick your venue.</li>
+        <li>Report how many <b>stacks of paddles</b> are in the queue rack (or groups of players waiting).</li>
+        <li>Multiple reports build confidence. Older reports decay automatically.</li>
+        <li>Earn points for helpful, accurate updates.</li>
+      </ol>
+    </section>
+  </main>
+
+  <footer>
+    <small>Prototype · Local-first (no server). Install to home screen for quick updates.</small>
+  </footer>
+
+  <!-- Rewards Modal -->
+  <div id="rewardsModal" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-head">
+        <h2>Rewards</h2>
+        <button id="closeRewardsBtn" class="icon">✕</button>
+      </div>
+      <div class="rewards-header">
+        <div class="level-badge" id="levelBadge">Bronze</div>
+        <div class="points-big"><span id="pointsBig">0</span> pts</div>
+        <button id="viewPerksBtn" class="secondary small">View Perks</button>
+      </div>
+      <div class="stats-row">
+        <div><b id="streakBig">0</b><span>Day Streak</span></div>
+        <div><b id="accuracyBig">—</b><span>Accuracy</span></div>
+        <div><b id="reportsMonth">0</b><span>Reports (30d)</span></div>
+      </div>
+      <div class="progress-wrap">
+        <div class="progress-label">Next Level: <span id="nextLevelName">Silver</span></div>
+        <div class="progress"><div id="progressFill" class="progress-fill" style="width:0%"></div></div>
+      </div>
+
+      <h3>Badges</h3>
+      <div class="badges-grid" id="badgesGrid"></div>
+
+      <div class="center">
+        <button id="leaderboardBtn" class="secondary">View Leaderboard (mock)</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast hidden">+5 PaddlePoints!</div>
+
+  <script src="app.js"></script>
+</body>
+</html>
