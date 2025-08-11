@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="en">
 <head>
@@ -9,6 +10,8 @@
   <meta name="theme-color" content="#ffffff">
 </head>
 <body>
+  <div id="jsOk" class="jsok hidden">✅ App script loaded</div>
+
   <header>
     <div class="head-left">
       <h1>🏓 Paddle Stack Queue</h1>
@@ -132,6 +135,7 @@
 
   <div id="toast" class="toast hidden">+5 PaddlePoints!</div>
 
-  <script src="app.js"></script>
+  <!-- cache-busting query param -->
+  <script src="app.js?v=fix1"></script>
 </body>
 </html>
