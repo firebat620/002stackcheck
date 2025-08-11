@@ -1,5 +1,5 @@
 
-/* Local-first prototype + Rewards */
+/* Local-first prototype + Rewards (final fix) */
 const LS_KEY = 'psq_data_v2';
 const BASE_POINTS = 5;
 const ACCURACY_BONUS = 3;
@@ -101,6 +101,20 @@ const streakBig = $('#streakBig');
 const accuracyBig = $('#accuracyBig');
 const reportsMonth = $('#reportsMonth');
 const badgesGrid = $('#badgesGrid');
+
+openRewardsBtn.addEventListener('click', ()=>{
+  updateRewardsUI();
+  show(rewardsModal);
+});
+
+function closeOverlay(){ hide(rewardsModal); }
+document.addEventListener('click', (e)=>{
+  if (e.target.id === 'closeRewardsBtn' || e.target.classList.contains('overlay-close')) closeOverlay();
+  if (e.target === rewardsModal) closeOverlay(); // click backdrop
+});
+document.addEventListener('keydown', (e)=>{
+  if (e.key === 'Escape') closeOverlay();
+});
 
 function initVenues(){
   venueSelect.innerHTML = '';
@@ -271,7 +285,7 @@ function nextLevelInfo(pts){
   if (pts < 1000) return { name:'Silver', need: 1000-pts, pct: (pts/1000)*100 };
   if (pts < 2000) return { name:'Gold', need: 2000-pts, pct: ((pts-1000)/1000)*100 };
   if (pts < 3000) return { name:'Platinum', need: 3000-pts, pct: ((pts-2000)/1000)*100 };
-  return { name:'Max', need: 0, pct: 100 };
+  return { name: 'Max', need: 0, pct: 100 };
 }
 
 function badgeList(){
@@ -328,7 +342,6 @@ function formatWait(consensus, venue){
   const courts = Math.max(1, venue.courts || 4);
   const avgGameMin = Math.max(5, parseInt(avgGameMinEl.value,10)||12);
   const ppc = Math.max(2, parseInt(ppcEl.value,10)||4);
-
   const roundsNeeded = Math.ceil(stacks / courts);
   const estMin = roundsNeeded * avgGameMin;
   const note = stacks === 0 ? "No wait — jump in!" : `${stacks} stack${stacks===1?'':'s'} across ${courts} court${courts===1?'':'s'}.`;
@@ -343,30 +356,16 @@ function showToast(text){
   setTimeout(()=> toast.classList.remove('show'), 1600);
 }
 
-// Rewards modal
-openRewardsBtn.addEventListener('click', ()=>{
-  updateRewardsUI();
-  show(rewardsModal);
-});
-closeRewardsBtn.addEventListener('click', ()=> hide(rewardsModal));
-
-// Render
 function render(){
   const venueId = venueSelect.value || (state.venues[0]?.id);
   const venue = state.venues.find(v=>v.id===venueId);
   if (!venue) return;
-
-  // evaluate any pending accuracy bonuses
   evaluatePendingAccuracy();
-
-  // consensus and status
   const result = computeConsensus(venue.id);
   consensusEl.textContent = (result.value==null ? '–' : result.value);
   confidenceEl.textContent = result.confidence ? result.confidence + '%' : '–';
   lastUpdateEl.textContent = result.lastTs ? fromNow(result.lastTs) : '–';
   waitTextEl.textContent = formatWait(result, venue);
-
-  // recent reports
   recentReportsEl.innerHTML = '';
   const all = [...result.reports].sort((a,b)=>b.createdAt - a.createdAt).slice(0, 12);
   all.forEach(r=>{
@@ -376,29 +375,19 @@ function render(){
     row.appendChild(left); row.appendChild(right);
     recentReportsEl.appendChild(row);
   });
-
-  // rewards derived stats
   state.rewards.streakDays = computeStreakDays();
   state.rewards.accuracyPct = computeAccuracy();
   state.rewards.totalReports30d = computeReports30d();
-
-  // header points
   pointsTotal.textContent = state.rewards.points;
-
-  // reward strip
   streakText.textContent = `🔥 ${state.rewards.streakDays}-Day Streak`;
   accuracyText.textContent = `🎯 ${state.rewards.accuracyPct==null?'—':state.rewards.accuracyPct+'%'} Accuracy`;
   lastGainText.textContent = `+${state.rewards.lastGain||0} pts`;
   show(rewardStrip);
-
-  // show JS OK banner (only if script ran)
   const ok = document.getElementById('jsOk');
   if (ok) ok.classList.remove('hidden');
-
   saveState();
 }
 
-// Rewards modal UI fill
 function updateRewardsUI(){
   const pts = state.rewards.points;
   pointsBig.textContent = pts;
@@ -410,16 +399,12 @@ function updateRewardsUI(){
     'Gold':'#FFD700',
     'Platinum':'#E5E4E2'
   })[level] || '#CD7F32';
-
   streakBig.textContent = state.rewards.streakDays || 0;
   accuracyBig.textContent = state.rewards.accuracyPct==null ? '—' : state.rewards.accuracyPct+'%';
   reportsMonth.textContent = state.rewards.totalReports30d || 0;
-
   const next = nextLevelInfo(pts);
   nextLevelName.textContent = next.name;
   progressFill.style.width = Math.max(0, Math.min(100, next.pct)).toFixed(0) + '%';
-
-  // badges
   badgesGrid.innerHTML = '';
   badgeList().forEach(b => {
     const div = el('div', { className: 'badge ' + (b.earned?'':'locked') }, b.label);
@@ -427,6 +412,5 @@ function updateRewardsUI(){
   });
 }
 
-// periodic render
 setInterval(render, 5000);
 render();

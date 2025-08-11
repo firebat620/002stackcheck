@@ -107,7 +107,8 @@
     <div class="modal-content">
       <div class="modal-head">
         <h2>Rewards</h2>
-        <button id="closeRewardsBtn" class="icon">✕</button>
+        <!-- Explicit close button with deterministic ID/class -->
+        <button id="closeRewardsBtn" class="icon overlay-close" aria-label="Close rewards overlay">✕</button>
       </div>
       <div class="rewards-header">
         <div class="level-badge" id="levelBadge">Bronze</div>
@@ -136,6 +137,6 @@
   <div id="toast" class="toast hidden">+5 PaddlePoints!</div>
 
   <!-- cache-busting query param -->
-  <script src="app.js?v=fix1"></script>
+  <script src="app.js?v=fix3"></script>
 </body>
 </html>
