@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>JS Diagnostic</title>
+  <style>
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; margin: 0; padding: 24px; }
+    .ok { display:inline-block; padding:8px 12px; border-radius:8px; background:#e6ffed; color:#0a5; border:1px solid #b6f5c6; }
+    .bad { display:inline-block; padding:8px 12px; border-radius:8px; background:#ffefef; color:#b00020; border:1px solid #f5b6b6; }
+    button { padding:10px 14px; border-radius:8px; border:1px solid #ddd; cursor:pointer; }
+  </style>
+</head>
+<body>
+  <h1>JS Diagnostic</h1>
+
+  <p id="status" class="bad">❌ Script has not run yet…</p>
+
+  <p>
+    <button id="btn">Click me</button>
+    <span id="clicks">0</span> clicks
+  </p>
+
+  <script>
+    // If this runs, we flip the badge and wire the button.
+    const status = document.getElementById('status');
+    status.textContent = '✅ Script running';
+    status.className = 'ok';
+
+    let n = 0;
+    document.getElementById('btn').addEventListener('click', () => {
+      n++;
+      document.getElementById('clicks').textContent = n;
+      console.log('Button clicked', n);
+      if (n === 1) alert('JS is working on this page!');
+    });
+  </script>
+</body>
+</html>
